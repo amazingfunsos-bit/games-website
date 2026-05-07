@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B5 GAMES — Play or Download</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #f5c842;
+  --gold2: #ffaa00;
+  --red: #ff3355;
+  --blue: #00aaff;
+  --green: #00ff88;
+  --purple: #cc44ff;
+  --bg: #06060f;
+  --bg2: #0d0d1f;
+  --panel: rgba(255,255,255,.04);
+  --border: rgba(255,255,255,.1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* ── STARFIELD ── */
+#stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: twinkle var(--d) ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%,100%{opacity:0} 50%{opacity:var(--op)}
+}
+
+/* ── SCANLINES ── */
+body::before {
+  content:'';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.07) 2px,
+    rgba(0,0,0,.07) 4px
+  );
+}
+
+/* ── GRID GLOW ── */
+body::after {
+  content:'';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,170,255,.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(245,200,66,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 60%, rgba(204,68,255,.06) 0%, transparent 60%);
+}
+
+/* ── WRAPPER ── */
+.wrap {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 70px 0 50px;
+}
+
+.logo-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(245,200,66,.15), rgba(0,170,255,.1));
+  border: 1px solid rgba(245,200,66,.35);
+  border-radius: 4px;
+  padding: 4px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  margin-bottom: 22px;
+  animation: fadeDown .6s ease both;
+}
+
+h1.title {
+  font-family: 'Black Ops One', cursive;
+  font-size: clamp(52px, 10vw, 100px);
+  letter-spacing: 8px;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 40%, #fff 60%, var(--blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200%;
+  animation: gradShift 4s ease-in-out infinite alternate, fadeDown .8s ease both;
+  margin-bottom: 16px;
+}
+
+@keyframes gradShift {
+  0%{background-position:0%} 100%{background-position:100%}
+}
+
+.tagline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: rgba(255,255,255,.4);
+  letter-spacing: 3px;
+  animation: fadeDown 1s ease .2s both;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 32px;
+  position: relative;
+  animation: fadeUp .8s ease both;
+}
+.section-label::before,
+.section-label::after {
+  content:'';
+  position: absolute;
+  top: 50%;
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.2));
+}
+.section-label::before{right: calc(50% + 120px);}
+.section-label::after{left: calc(50% + 120px); transform: scaleX(-1);}
+
+/* ── GAME CARDS ── */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+
+.game-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  transition: transform .3s ease, box-shadow .3s ease;
+  animation: fadeUp .8s ease both;
+}
+.game-card:hover {
+  transform: translateY(-8px) scale(1.01);
+}
+.game-card:nth-child(1) { animation-delay:.1s; }
+.game-card:nth-child(2) { animation-delay:.2s; }
+
+/* Card glow on hover */
+.game-card.bedwars:hover { box-shadow: 0 20px 60px rgba(255,51,85,.25), 0 0 0 1px rgba(255,51,85,.4); }
+.game-card.b5ville:hover { box-shadow: 0 20px 60px rgba(0,170,255,.25), 0 0 0 1px rgba(0,170,255,.4); }
+
+/* Card art / banner */
+.card-art {
+  position: relative;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.bedwars .card-art {
+  background: linear-gradient(135deg, #1a0005 0%, #2d0010 40%, #0a0015 100%);
+}
+.b5ville .card-art {
+  background: linear-gradient(135deg, #000d1a 0%, #001a2d 40%, #000a0f 100%);
+}
+
+/* Animated bg shapes in card art */
+.card-art::before {
+  content:'';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+}
+.bedwars .card-art::after {
+  content:'';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,51,85,.2) 0%, transparent 70%);
+  animation: pulse 3s ease-in-out infinite;
+}
+.b5ville .card-art::after {
+  content:'';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,170,255,.2) 0%, transparent 70%);
+  animation: pulse 3s ease-in-out infinite .5s;
+}
+@keyframes pulse { 0%,100%{transform:scale(1)}  50%{transform:scale(1.15)} }
+
+.card-emoji {
+  font-size: 80px;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 30px currentColor);
+  animation: floatEmoji 3s ease-in-out infinite;
+}
+.bedwars .card-emoji { animation-delay: 0s; }
+.b5ville .card-emoji { animation-delay: .8s; }
+@keyframes floatEmoji {
+  0%,100%{transform:translateY(0) rotate(-3deg)}
+  50%{transform:translateY(-10px) rotate(3deg)}
+}
+
+.card-body {
+  padding: 22px 24px 24px;
+}
+
+.card-title {
+  font-family: 'Black Ops One', cursive;
+  font-size: 26px;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+}
+.bedwars .card-title { color: var(--red); }
+.b5ville .card-title { color: var(--blue); }
+
+.card-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,.5);
+  line-height: 1.6;
+  margin-bottom: 22px;
+  font-weight: 400;
+}
+
+/* ── TAG PILLS ── */
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+.bedwars .tag { border-color: rgba(255,51,85,.4); color: rgba(255,100,120,.8); }
+.b5ville .tag { border-color: rgba(0,170,255,.4); color: rgba(0,190,255,.8); }
+
+/* ── ACTION BUTTONS ── */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all .2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content:'';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.08);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.btn:hover::after { opacity: 1; }
+.btn:active { transform: scale(.97); }
+
+.btn-play {
+  background: linear-gradient(135deg, #ff1a44, #cc0033);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(255,51,85,.35);
+}
+.btn-play:hover { box-shadow: 0 6px 28px rgba(255,51,85,.55); transform: translateY(-2px); }
+
+.btn-play-blue {
+  background: linear-gradient(135deg, #0088ff, #0055cc);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0,136,255,.35);
+}
+.btn-play-blue:hover { box-shadow: 0 6px 28px rgba(0,136,255,.55); transform: translateY(-2px); }
+
+.btn-dl {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.8);
+}
+.btn-dl:hover { border-color: rgba(255,255,255,.4); color: #fff; transform: translateY(-2px); }
+
+.btn-icon { font-size: 16px; }
+
+/* ── DIVIDER ── */
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 50px 0 40px;
+}
+.divider::before {
+  content:'';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+}
+.divider span {
+  position: relative;
+  background: var(--bg);
+  padding: 0 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.25);
+  letter-spacing: 4px;
+}
+
+/* ── FEATURED LINK (Rebbi's Games) ── */
+.featured-link {
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid rgba(0,255,136,.2);
+  background: linear-gradient(135deg, rgba(0,255,136,.04) 0%, rgba(204,68,255,.04) 100%);
+  padding: 32px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: all .3s ease;
+  overflow: hidden;
+  animation: fadeUp .8s ease .4s both;
+}
+.featured-link:hover {
+  border-color: rgba(0,255,136,.5);
+  box-shadow: 0 0 60px rgba(0,255,136,.1);
+  transform: translateY(-4px);
+}
+.featured-link::before {
+  content:'';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,136,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.fl-left { display: flex; align-items: center; gap: 22px; }
+.fl-emoji {
+  font-size: 52px;
+  filter: drop-shadow(0 0 16px rgba(0,255,136,.4));
+  animation: floatEmoji 4s ease-in-out infinite;
+}
+.fl-title {
+  font-family: 'Black Ops One', cursive;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+.fl-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,.45);
+  font-weight: 400;
+}
+.fl-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,255,136,.4);
+  color: var(--green);
+  white-space: nowrap;
+  transition: all .2s;
+}
+.featured-link:hover .fl-badge {
+  background: rgba(0,255,136,.12);
+  box-shadow: 0 0 20px rgba(0,255,136,.2);
+}
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 40px 0 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.18);
+  letter-spacing: 2px;
+  animation: fadeUp .8s ease .6s both;
+}
+footer span { color: var(--gold); }
+
+/* ── DOWNLOAD MODAL ── */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.modal-bg.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: #0d0d1f;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 18px;
+  padding: 36px 40px;
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+  transform: scale(.95) translateY(20px);
+  transition: transform .3s ease;
+  text-align: center;
+}
+.modal-bg.open .modal { transform: scale(1) translateY(0); }
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 22px;
+  cursor: pointer;
+  color: rgba(255,255,255,.4);
+  transition: color .2s;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+.modal-close:hover { color: #fff; }
+
+.modal-emoji { font-size: 52px; margin-bottom: 14px; }
+.modal-title {
+  font-family: 'Black Ops One', cursive;
+  font-size: 22px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.modal-sub { font-size: 14px; color: rgba(255,255,255,.5); margin-bottom: 28px; line-height:1.6; }
+
+.modal-btns { display: flex; flex-direction: column; gap: 12px; }
+.modal-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all .2s;
+  color: #fff;
+}
+.modal-btn-primary {
+  background: linear-gradient(135deg, #f5c842, #ff8800);
+  color: #000;
+  box-shadow: 0 4px 20px rgba(245,200,66,.3);
+}
+.modal-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,200,66,.45); }
+.modal-btn-secondary {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.2);
+}
+.modal-btn-secondary:hover { background: rgba(255,255,255,.14); transform: translateY(-2px); }
+.modal-btn-dl {
+  background: linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.06));
+  border: 1px solid rgba(255,255,255,.15);
+}
+.modal-btn-dl:hover { background: rgba(255,255,255,.15); transform: translateY(-2px); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── CURSOR TRAIL ── */
+.cursor-dot {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  pointer-events: none;
+  z-index: 999;
+  transition: transform .1s;
+  mix-blend-mode: screen;
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div id="stars"></div>
+
+<!-- Cursor dot -->
+<div class="cursor-dot" id="cursor"></div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-emoji" id="modal-emoji">🎮</div>
+    <div class="modal-title" id="modal-title">GAME TITLE</div>
+    <div class="modal-sub" id="modal-sub">Choose how you want to play.</div>
+    <div class="modal-btns" id="modal-btns"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-badge">B5 GAMES STUDIO</div>
+    <h1 class="title">B5 GAMES</h1>
+    <p class="tagline">PLAY ONLINE · DOWNLOAD · BATTLE</p>
+  </header>
+
+  <!-- Games section -->
+  <div class="section-label">— GAMES —</div>
+
+  <div class="games-grid">
+
+    <!-- BedWars Card -->
+    <div class="game-card bedwars">
+      <div class="card-art">
+        <div class="card-emoji">⚔️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">BEDWARS</div>
+        <p class="card-desc">
+          Defend your bed, destroy enemy beds, and be the last team standing.
+          Answer questions to earn resources. Build, fight, survive.
+        </p>
+        <div class="tags">
+          <span class="tag">MULTIPLAYER</span>
+          <span class="tag">3D ACTION</span>
+          <span class="tag">STRATEGY</span>
+          <span class="tag">BUILD</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-play" onclick="openModal('bedwars')">
+            <span class="btn-icon">▶</span> PLAY
+          </button>
+          <button class="btn btn-dl" onclick="downloadFile('bedwars')">
+            <span class="btn-icon">⬇</span> DOWNLOAD
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- B5ville Card -->
+    <div class="game-card b5ville">
+      <div class="card-art">
+        <div class="card-emoji">🏙️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">B5VILLE</div>
+        <p class="card-desc">
+          Open-world city builder and life simulator. Build a city from the ruins,
+          start a family, get a job, explore 10 countries, and go multiplayer.
+        </p>
+        <div class="tags">
+          <span class="tag">OPEN WORLD</span>
+          <span class="tag">MULTIPLAYER</span>
+          <span class="tag">CITY BUILDER</span>
+          <span class="tag">LIFE SIM</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-play-blue" onclick="openModal('b5ville')">
+            <span class="btn-icon">▶</span> PLAY
+          </button>
+          <button class="btn btn-dl" onclick="downloadFile('b5ville')">
+            <span class="btn-icon">⬇</span> DOWNLOAD
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Divider -->
+  <div class="divider"><span>MORE GAMES</span></div>
+
+  <!-- Rebbi's Games -->
+  <a class="featured-link" href="https://school-games-74bf0.web.app/" target="_blank" rel="noopener">
+    <div class="fl-left">
+      <div class="fl-emoji">🎲</div>
+      <div>
+        <div class="fl-title">REBBI'S GAMES</div>
+        <div class="fl-sub">A collection of fun school games — click to visit the full arcade!</div>
+      </div>
+    </div>
+    <div class="fl-badge">VISIT SITE →</div>
+  </a>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 <span>B5 GAMES STUDIO</span> · Built with ❤️ · Play Hard</p>
+  </footer>
+
+</div>
+
+<script>
+// ── STARS ──────────────────────────────────────
+(function spawnStars(){
+  const container=document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const size=Math.random()*2.5+0.5;
+    s.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      --d:${2+Math.random()*5}s;
+      --op:${0.3+Math.random()*0.7};
+      animation-delay:${Math.random()*5}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// ── CURSOR TRAIL ───────────────────────────────
+const cursorEl=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{
+  cursorEl.style.left=(e.clientX-3)+'px';
+  cursorEl.style.top=(e.clientY-3)+'px';
+});
+
+// ── GAME DATA ──────────────────────────────────
+const GAMES = {
+  bedwars: {
+    emoji: '⚔️',
+    title: 'BEDWARS',
+    sub: 'Choose how you want to experience BedWars.',
+    playUrl: 'https://bedwars-B5.vercel.app',
+    dlFile: 'bedwars_v2.html',
+    dlLabel: 'Download BedWars HTML',
+    color: '#ff3355',
+  },
+  b5ville: {
+    emoji: '🏙️',
+    title: 'B5VILLE',
+    sub: 'Choose how you want to experience B5Ville.',
+    playUrl: 'https://B5ville.vercel.app',
+    dlFile: 'B5ville.html',
+    dlLabel: 'Download B5Ville HTML',
+    color: '#00aaff',
+  },
+};
+
+// ── MODAL ──────────────────────────────────────
+function openModal(gameKey){
+  const g=GAMES[gameKey];
+  document.getElementById('modal-emoji').textContent=g.emoji;
+  document.getElementById('modal-title').textContent=g.title;
+  document.getElementById('modal-title').style.color=g.color;
+  document.getElementById('modal-sub').textContent=g.sub;
+
+  const btns=document.getElementById('modal-btns');
+  btns.innerHTML=`
+    <a class="modal-btn modal-btn-primary" href="${g.playUrl}" target="_blank" rel="noopener">
+      <span>🌐</span> PLAY ONLINE
+    </a>
+    <button class="modal-btn modal-btn-dl" onclick="downloadFile('${gameKey}');closeModal()">
+      <span>⬇️</span> ${g.dlLabel}
+    </button>
+    <button class="modal-btn modal-btn-secondary" onclick="closeModal()">
+      Cancel
+    </button>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+}
+
+// Close modal on backdrop click
+document.getElementById('modal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+
+// ── DOWNLOAD ──────────────────────────────────
+function downloadFile(gameKey){
+  const g=GAMES[gameKey];
+  // Create a link pointing to the file
+  const a=document.createElement('a');
+  a.href=g.dlFile;
+  a.download=g.dlFile;
+  // Fallback: if file not found locally, tell user
+  a.click();
+}
+
+// ── KEYBOARD ─────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeModal();
+});
+</script>
+</body>
+</html>
